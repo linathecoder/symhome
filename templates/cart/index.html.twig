@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1>🛒 Panier</h1>
+
+<ul>
+    {% for id, qty in cart %}
+        <li>
+            Produit ID: {{ id }} | Quantité: {{ qty }}
+            <a href="{{ path('cart_remove', {'id': id}) }}">❌ Remove</a>
+        </li>
+    {% else %}
+        <li>Panier vide</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

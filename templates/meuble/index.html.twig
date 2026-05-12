@@ -1,0 +1,17 @@
+<h1>🛋 Liste des meubles</h1>
+
+<div class="container">
+    {% for meuble in meubles %}
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+            <h3>{{ meuble.nom }}</h3>
+            <p>{{ meuble.description }}</p>
+            <p><b>{{ meuble.prix }} DT</b></p>
+
+            <a href="#" class="btn btn-success">
+                Ajouter au panier
+            </a>
+        </div>
+    {% else %}
+        <p>Aucun meuble trouvé</p>
+    {% endfor %}
+</div>
