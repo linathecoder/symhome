@@ -1,0 +1,43 @@
+<h1 class="text-center my-4">{{ meuble.nom }}</h1>
+
+<div class="container">
+
+    <div class="card shadow p-4">
+
+        <img src="/uploads/{{ meuble.image }}"
+             style="height:300px; object-fit:cover;"
+             class="w-100 mb-3">
+
+        <h3 class="text-success">
+            {{ meuble.prix }} DT
+        </h3>
+
+        <p>
+            {{ meuble.description }}
+        </p>
+
+        <p>
+            <b>Stock :</b> {{ meuble.stock }}
+        </p>
+
+        <p>
+            <b>Catégorie :</b> {{ meuble.categorie.nom }}
+        </p>
+
+        <a href="{{ path('cart_add', {'id': meuble.id}) }}"
+           class="btn btn-success w-100">
+
+            Ajouter au panier 🛒
+
+        </a>
+
+        <a href="{{ path('app_meuble_index') }}"
+           class="btn btn-secondary w-100 mt-2">
+
+            Retour
+
+        </a>
+
+    </div>
+
+</div>

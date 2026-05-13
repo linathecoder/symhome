@@ -28,7 +28,7 @@ class Commande
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-   
+
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: LigneCommande::class)]
     private Collection $ligneCommandes;
 
@@ -37,7 +37,7 @@ class Commande
         $this->ligneCommandes = new ArrayCollection();
     }
 
-   
+
     public function getId(): ?int { return $this->id; }
 
     public function getDate(): ?\DateTime { return $this->date; }
@@ -63,4 +63,20 @@ class Commande
         $this->status = $status;
         return $this;
     }
+    public function getUser(): ?User
+{
+    return $this->user;
+}
+
+public function setUser(?User $user): static
+{
+    $this->user = $user;
+
+    return $this;
+}
+
+public function getLigneCommandes(): Collection
+{
+    return $this->ligneCommandes;
+}
 }

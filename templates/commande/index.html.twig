@@ -1,20 +1,71 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CommandeController!{% endblock %}
+{% block title %}Liste des commandes{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+<div class="container mt-5">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/xampp/htdocs/symhome/symhome-project/src/Controller/CommandeController.php</code></li>
-        <li>Your template at <code>C:/xampp/htdocs/symhome/symhome-project/templates/commande/index.html.twig</code></li>
-    </ul>
+    <h1 class="mb-4">Liste des commandes</h1>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for commande in commandes %}
+
+            <tr>
+
+                <td>{{ commande.id }}</td>
+
+                <td>
+                    {{ commande.date|date('d/m/Y') }}
+                </td>
+
+                <td>{{ commande.status }}</td>
+
+                <td>{{ commande.total }} DT</td>
+
+                <td>
+
+                    <a href="{{ path('commande_show', {'id': commande.id}) }}"
+                       class="btn btn-info">
+                        Voir
+                    </a>
+
+                    <a href="{{ path('commande_delete', {'id': commande.id}) }}"
+                       class="btn btn-danger">
+                        Supprimer
+                    </a>
+
+                </td>
+
+            </tr>
+
+        {% else %}
+
+            <tr>
+                <td colspan="5">
+                    Aucune commande trouvée
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
 </div>
+
 {% endblock %}
