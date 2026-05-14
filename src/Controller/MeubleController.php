@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Meuble;
 use App\Form\MeubleType;
 use App\Repository\MeubleRepository;
+use App\Repository\CategorieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,14 +16,42 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/meuble')]
 class MeubleController extends AbstractController
 {
+    // ================= LIST + SEARCH + FILTER =================
     #[Route('/', name: 'app_meuble_index')]
-    public function index(MeubleRepository $meubleRepository): Response
-    {
+    public function index(
+        Request $request,
+        MeubleRepository $meubleRepository,
+        CategorieRepository $categorieRepository
+    ): Response {
+
+        $search = $request->query->get('search');
+        $categorieId = $request->query->get('categorie');
+
+        $qb = $meubleRepository->createQueryBuilder('m');
+
+        // SEARCH BY NAME
+        if ($search) {
+            $qb->andWhere('m.nom LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        // FILTER BY CATEGORY
+        if ($categorieId) {
+            $qb->andWhere('m.categorie = :cat')
+               ->setParameter('cat', $categorieId);
+        }
+
+        $meubles = $qb->getQuery()->getResult();
+
         return $this->render('meuble/index.html.twig', [
-            'meubles' => $meubleRepository->findAll(),
+            'meubles' => $meubles,
+            'categories' => $categorieRepository->findAll(),
+            'search' => $search,
+            'selectedCategorie' => $categorieId
         ]);
     }
 
+    // ================= CREATE (ADMIN) =================
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/new', name: 'app_meuble_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
@@ -43,6 +72,7 @@ class MeubleController extends AbstractController
         ]);
     }
 
+    // ================= EDIT (ADMIN) =================
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_meuble_edit')]
     public function edit(Meuble $meuble, Request $request, EntityManagerInterface $em): Response
@@ -61,6 +91,7 @@ class MeubleController extends AbstractController
         ]);
     }
 
+    // ================= DELETE (ADMIN) =================
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/delete', name: 'app_meuble_delete')]
     public function delete(Meuble $meuble, EntityManagerInterface $em): Response
@@ -70,17 +101,13 @@ class MeubleController extends AbstractController
 
         return $this->redirectToRoute('app_meuble_index');
     }
-    #[Route('/meuble/{id}', name: 'app_meuble_show')]
-public function show(int $id, MeubleRepository $meubleRepository): Response
-{
-    $meuble = $meubleRepository->find($id);
 
-    if (!$meuble) {
-        throw $this->createNotFoundException('Meuble introuvable');
+    // ================= DETAIL PRODUCT =================
+    #[Route('/{id}', name: 'app_meuble_show')]
+    public function show(Meuble $meuble): Response
+    {
+        return $this->render('meuble/show.html.twig', [
+            'meuble' => $meuble,
+        ]);
     }
-
-    return $this->render('meuble/show.html.twig', [
-        'meuble' => $meuble,
-    ]);
-}
 }

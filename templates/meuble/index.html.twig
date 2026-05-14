@@ -1,80 +1,40 @@
-<h1 class="text-center my-4 fw-bold">🛋 Nos Meubles</h1>
+{% extends 'base.html.twig' %}
 
-<div class="container">
+{% block title %}Boutique{% endblock %}
 
-    <div class="row g-4">
+{% block body %}
 
-        {% for meuble in meubles %}
-
-            <div class="col-md-4">
-
-                <div class="card border-0 shadow-lg h-100">
-
-                    <!-- IMAGE -->
-                    <div style="overflow:hidden; border-radius:15px 15px 0 0;">
-                        <img src="/uploads/{{ meuble.image }}"
-                             class="w-100"
-                             style="height:220px; object-fit:cover; transition:0.3s;">
-                    </div>
-
-                    <div class="card-body text-center">
-
-                        <!-- NOM -->
-                        <h5 class="fw-bold">{{ meuble.nom }}</h5>
-
-                        <!-- DESCRIPTION -->
-                        <p class="text-muted small">
-                            {{ meuble.description }}
-                        </p>
-
-                        <!-- PRIX -->
-                        <h5 class="text-success fw-bold">
-                            {{ meuble.prix }} DT
-                        </h5>
-
-                        <!-- STOCK -->
-                        <span class="badge bg-secondary mb-2">
-                            Stock: {{ meuble.stock }}
-                        </span>
-
-                        <!-- BUTTON DETAIL -->
-                        <a href="{{ path('app_meuble_show', {'id': meuble.id}) }}"
-                           class="btn btn-outline-primary w-100 mb-2">
-
-                            👁 Voir détail
-
-                        </a>
-
-                        <!-- BUTTON PANIER -->
-                        <a href="{{ path('cart_add', {'id': meuble.id}) }}"
-                           class="btn btn-success w-100 mb-2">
-
-                            🛒 Ajouter au panier
-
-                        </a>
-
-                        <!-- BUTTON ADMIN -->
-                        <a href="{{ path('app_meuble_edit', {'id': meuble.id}) }}"
-                           class="btn btn-warning w-100">
-
-                            ✏ Modifier
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        {% else %}
-
-            <div class="text-center">
-                <p class="text-muted">Aucun meuble trouvé</p>
-            </div>
-
-        {% endfor %}
-
-    </div>
-
+<div class="page-intro">
+    <span class="eyebrow">Mobilier contemporain</span>
+    <h1>Design élégant pour chaque espace</h1>
+    <p class="lead">Découvrez une sélection de meubles chics et modernes pour une ambiance raffinée et confortable.</p>
 </div>
+
+<div class="product-grid">
+    {% for meuble in meubles %}
+        <article class="product-card">
+            <figure class="product-media">
+                <img src="/uploads/{{ meuble.image }}" alt="{{ meuble.nom }}">
+            </figure>
+            <div class="product-content">
+                <h2>{{ meuble.nom }}</h2>
+                <p class="product-copy">{{ meuble.description|slice(0, 120) ~ '...' }}</p>
+                <div class="product-meta">
+                    <span class="price">{{ meuble.prix }} DT</span>
+                    <span class="stock">Stock {{ meuble.stock }}</span>
+                </div>
+                <div class="product-actions">
+                    <a href="{{ path('app_meuble_show', {'id': meuble.id}) }}" class="btn btn-primary">Voir</a>
+                    <a href="{{ path('cart_add', {'id': meuble.id}) }}" class="btn btn-success">Ajouter</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_meuble_edit', {'id': meuble.id}) }}" class="btn btn-secondary">Modifier</a>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">Aucun meuble trouvé</div>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,89 +1,57 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Panier{% endblock %}
+
 {% block body %}
 
-<div class="container mt-4">
-
-    <h1 class="text-center mb-4">🛒 Mon Panier</h1>
-
-    {% if items is empty %}
-
-        <div class="alert alert-warning text-center">
-            Votre panier est vide 😢
-        </div>
-
-    {% else %}
-
-        <div class="card shadow p-3">
-
-            <table class="table table-hover">
-
-                <thead class="table-dark">
-                    <tr>
-                        <th>Produit</th>
-                        <th>Prix</th>
-                        <th>Quantité</th>
-                        <th>Total</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    {% set grandTotal = 0 %}
-
-                    {% for item in items %}
-
-                        {% set sousTotal = item.meuble.prix * item.qty %}
-                        {% set grandTotal = grandTotal + sousTotal %}
-
-                        <tr>
-
-                            <td>
-                                <strong>{{ item.meuble.nom }}</strong>
-                            </td>
-
-                            <td>{{ item.meuble.prix }} DT</td>
-
-                            <td>
-                                {{ item.qty }}
-                            </td>
-
-                            <td class="text-success fw-bold">
-                                {{ sousTotal }} DT
-                            </td>
-
-                            <td>
-                                <a href="{{ path('cart_remove', {'id': item.meuble.id}) }}"
-                                   class="btn btn-danger btn-sm">
-
-                                    ❌
-
-                                </a>
-                            </td>
-
-                        </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            <div class="text-end mt-3">
-
-                <h4>Total : <span class="text-success">{{ grandTotal }} DT</span></h4>
-
-                <button class="btn btn-success mt-2">
-                    Valider commande ✔
-                </button>
-
-            </div>
-
-        </div>
-
-    {% endif %}
-
+<div class="page-intro">
+    <h1>Panier</h1>
+    <p class="lead">Regardez vos articles sélectionnés et finalisez votre commande en quelques clics.</p>
 </div>
+
+{% if items is empty %}
+    <div class="alert">Votre panier est vide</div>
+{% else %}
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Sous-total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set grandTotal = 0 %}
+                {% for item in items %}
+                    {% set sousTotal = item.meuble.prix * item.qty %}
+                    {% set grandTotal = grandTotal + sousTotal %}
+                    <tr>
+                        <td>
+                            <div class="product-line">
+                                <img src="/uploads/{{ item.meuble.image }}" alt="{{ item.meuble.nom }}">
+                                <div>
+                                    <strong>{{ item.meuble.nom }}</strong>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ item.meuble.prix }} DT</td>
+                        <td>{{ item.qty }}</td>
+                        <td><strong>{{ sousTotal }} DT</strong></td>
+                        <td><a href="{{ path('cart_remove', {'id': item.meuble.id}) }}" class="btn btn-danger">Supprimer</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="product-actions" style="justify-content:flex-end;">
+            <div>
+                <h3>Total : <span class="price">{{ grandTotal }} DT</span></h3>
+            </div>
+            <a href="{{ path('cart_checkout') }}" class="btn btn-success">Valider commande</a>
+        </div>
+    </div>
+{% endif %}
 
 {% endblock %}

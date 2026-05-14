@@ -1,0 +1,42 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+
+<div class="dashboard-grid">
+    <section class="dashboard-summary">
+        <h1>Tableau de bord</h1>
+        <div class="dashboard-cards">
+            <div class="dashboard-card">
+                <span class="label">Commandes</span>
+                <strong>{{ nbCommandes }}</strong>
+            </div>
+            <div class="dashboard-card">
+                <span class="label">Produits</span>
+                <strong>{{ nbMeubles }}</strong>
+            </div>
+            <div class="dashboard-card">
+                <span class="label">Utilisateurs</span>
+                <strong>{{ nbUsers }}</strong>
+            </div>
+            <div class="dashboard-card">
+                <span class="label">Chiffre d'affaires</span>
+                <strong>{{ ca }} DT</strong>
+            </div>
+        </div>
+    </section>
+    <section class="dashboard-chart">
+        <div class="card">
+            <div class="section-header">
+                <h2>Vue globale</h2>
+            </div>
+            <div style="height:360px;">
+                <canvas id="adminChart" data-stats="{{ [ca, nbCommandes, nbMeubles, nbUsers]|json_encode }}"></canvas>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

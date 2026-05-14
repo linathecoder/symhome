@@ -13,12 +13,10 @@ class LigneCommande
     #[ORM\Column]
     private ?int $id = null;
 
-    // 🔗 Many lignes belong to one commande
     #[ORM\ManyToOne(inversedBy: 'ligneCommandes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Commande $commande = null;
 
-    // 🔗 Many lignes refer to one meuble
     #[ORM\ManyToOne(inversedBy: 'ligneCommandes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Meuble $meuble = null;
@@ -28,6 +26,15 @@ class LigneCommande
 
     #[ORM\Column]
     private ?float $price = null;
+
+    // ⭐ BONUS IMPORTANT (statistiques)
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     // ================= GETTERS & SETTERS =================
 
@@ -77,6 +84,17 @@ class LigneCommande
     public function setPrice(float $price): static
     {
         $this->price = $price;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 }
