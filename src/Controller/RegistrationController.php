@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
@@ -19,10 +19,6 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $em
     ): Response {
-
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
-        }
 
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -37,11 +33,10 @@ class RegistrationController extends AbstractController
             );
 
             $user->setRoles(['ROLE_USER']);
+            $user->setIsVerified(true);
 
             $em->persist($user);
             $em->flush();
-
-            $this->addFlash('success', 'Compte créé avec succès !');
 
             return $this->redirectToRoute('app_login');
         }

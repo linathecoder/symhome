@@ -1,63 +1,10 @@
 {% extends 'base.html.twig' %}
-{% block title %}Mon Panier — SymHome{% endblock %}
 
-{% block title %}Panier{% endblock %}
+{% block title %}Mon Panier — SymHome{% endblock %}
 
 {% block body %}
 <div class="container py-5">
 
-<<<<<<< HEAD
-<div class="page-intro">
-    <h1>Panier</h1>
-    <p class="lead">Regardez vos articles sélectionnés et finalisez votre commande en quelques clics.</p>
-</div>
-
-{% if items is empty %}
-    <div class="alert">Votre panier est vide</div>
-{% else %}
-    <div class="card">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Produit</th>
-                    <th>Prix</th>
-                    <th>Quantité</th>
-                    <th>Sous-total</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% set grandTotal = 0 %}
-                {% for item in items %}
-                    {% set sousTotal = item.meuble.prix * item.qty %}
-                    {% set grandTotal = grandTotal + sousTotal %}
-                    <tr>
-                        <td>
-                            <div class="product-line">
-                                <img src="/uploads/{{ item.meuble.image }}" alt="{{ item.meuble.nom }}">
-                                <div>
-                                    <strong>{{ item.meuble.nom }}</strong>
-                                </div>
-                            </div>
-                        </td>
-                        <td>{{ item.meuble.prix }} DT</td>
-                        <td>{{ item.qty }}</td>
-                        <td><strong>{{ sousTotal }} DT</strong></td>
-                        <td><a href="{{ path('cart_remove', {'id': item.meuble.id}) }}" class="btn btn-danger">Supprimer</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="product-actions" style="justify-content:flex-end;">
-            <div>
-                <h3>Total : <span class="price">{{ grandTotal }} DT</span></h3>
-            </div>
-            <a href="{{ path('cart_checkout') }}" class="btn btn-success">Valider commande</a>
-        </div>
-    </div>
-{% endif %}
-
-=======
     <div class="text-center mb-4">
         <h1 class="section-title">Mon <span>Panier</span></h1>
         <div class="section-line mx-auto"></div>
@@ -68,106 +15,68 @@
             <i class="bi bi-cart-x" style="font-size:4rem; color:#dee2e6;"></i>
             <p class="text-muted mt-3 fs-5">Votre panier est vide.</p>
             <a href="{{ path('app_meuble_index') }}" class="btn btn-primary-sym px-5 mt-2">
-                <i class="bi bi-grid3x3-gap me-2"></i>Voir notre catalogue
+                Voir notre catalogue
             </a>
         </div>
     {% else %}
         <div class="row g-4">
-            <!-- Cart items -->
+
             <div class="col-lg-8">
                 <div class="bg-white rounded-4 shadow-sm p-4">
+
                     {% for item in items %}
-                    <div class="d-flex align-items-center gap-3 py-3 {% if not loop.last %}border-bottom{% endif %}">
-                        <!-- Image -->
-                        <img src="/uploads/{{ item.meuble.image }}" alt="{{ item.meuble.nom }}"
-                             style="width:80px; height:80px; object-fit:cover; border-radius:12px; flex-shrink:0;">
+                        <div class="d-flex align-items-center gap-3 py-3 {% if not loop.last %}border-bottom{% endif %}">
 
-                        <!-- Info -->
-                        <div class="flex-grow-1">
-                            <h6 class="fw-700 mb-1">{{ item.meuble.nom }}</h6>
-                            {% if item.meuble.categorie %}
-                            <small class="text-muted">{{ item.meuble.categorie.nom }}</small>
-                            {% endif %}
-                            <div style="color:#c8a96e; font-weight:700; margin-top:4px;">
-                                {{ item.meuble.prix|number_format(2,',',' ') }} DT
+                            <img src="/uploads/{{ item.meuble.image }}"
+                                 style="width:80px;height:80px;object-fit:cover;border-radius:12px;">
+
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ item.meuble.nom }}</h6>
+                                <div style="color:#c8a96e;font-weight:700;">
+                                    {{ item.meuble.prix }} DT
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Quantity form -->
-                        <form method="post" action="{{ path('cart_update', {'id': item.meuble.id}) }}"
-                              class="d-flex align-items-center gap-2">
-                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
-                                   class="form-control text-center" style="width:70px;">
-                            <button class="btn btn-sm btn-outline-sym">OK</button>
-                        </form>
-
-                        <!-- Subtotal -->
-                        <div class="text-end" style="min-width:90px;">
-                            <div class="fw-800" style="color:#1a1a2e;">
-                                {{ item.sousTotal|number_format(2,',',' ') }} DT
+                            <div class="fw-bold">
+                                {{ item.sousTotal ?? (item.meuble.prix * item.quantity) }} DT
                             </div>
-                        </div>
 
-                        <!-- Remove -->
-                        <a href="{{ path('cart_remove', {'id': item.meuble.id}) }}"
-                           class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </div>
+                            <a href="{{ path('cart_remove', {'id': item.meuble.id}) }}"
+                               class="btn btn-sm btn-danger">
+                                Supprimer
+                            </a>
+                        </div>
                     {% endfor %}
 
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <a href="{{ path('app_meuble_index') }}" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Continuer les achats
-                        </a>
-                        <a href="{{ path('cart_clear') }}" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-trash me-1"></i>Vider le panier
-                        </a>
-                    </div>
                 </div>
             </div>
 
-            <!-- Order summary -->
             <div class="col-lg-4">
                 <div class="bg-white rounded-4 shadow-sm p-4">
-                    <h5 class="fw-700 mb-3">Résumé de commande</h5>
 
-                    {% set itemCount = 0 %}
-                    {% for item in items %}{% set itemCount = itemCount + item.quantity %}{% endfor %}
+                    <h5>Résumé</h5>
 
-                    <div class="d-flex justify-content-between mb-2 text-muted small">
-                        <span>Sous-total ({{ itemCount }} article{{ itemCount > 1 ? 's' : '' }})</span>
-                        <span>{{ total|number_format(2,',',' ') }} DT</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2 text-muted small">
-                        <span>Livraison</span>
-                        <span class="text-success">Gratuite</span>
-                    </div>
                     <hr>
-                    <div class="d-flex justify-content-between fw-800 fs-5 mb-4">
-                        <span>Total</span>
-                        <span style="color:#c8a96e;">{{ total|number_format(2,',',' ') }} DT</span>
+
+                    <div class="fw-bold fs-5">
+                        Total : {{ total }} DT
                     </div>
 
                     {% if is_granted('ROLE_USER') %}
-                    <a href="{{ path('app_checkout') }}" class="btn btn-primary-sym w-100 py-3 fw-700">
-                        <i class="bi bi-bag-check me-2"></i>Valider la commande
-                    </a>
+                        <a href="{{ path('app_checkout') }}" class="btn btn-primary-sym w-100 mt-3">
+                            Valider commande
+                        </a>
                     {% else %}
-                    <a href="{{ path('app_login') }}" class="btn btn-primary-sym w-100 py-3 fw-700">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour commander
-                    </a>
+                        <a href="{{ path('app_login') }}" class="btn btn-primary-sym w-100 mt-3">
+                            Se connecter
+                        </a>
                     {% endif %}
 
-                    <div class="text-center mt-3">
-                        <small class="text-muted">
-                            <i class="bi bi-shield-check me-1 text-success"></i>Paiement 100% sécurisé
-                        </small>
-                    </div>
                 </div>
             </div>
+
         </div>
     {% endif %}
+
 </div>
->>>>>>> 6f32c70fbafc9dcb7843c92b8b7e278ebcb6799b
 {% endblock %}

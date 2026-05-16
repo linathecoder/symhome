@@ -5,38 +5,45 @@
 {% block body %}
 
 <!-- ── HERO ──────────────────────────────────────────────────────────── -->
-<section style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 85vh; display:flex; align-items:center;">
-    <div class="container text-center text-white py-5">
-        <p class="text-uppercase fw-600 mb-3" style="color:#c8a96e; letter-spacing:3px; font-size:0.9rem;">Bienvenue sur SymHome</p>
-        <h1 class="display-3 fw-800 mb-4" style="line-height:1.15;">
-            Votre intérieur,<br>
-            <span style="background: linear-gradient(135deg,#c8a96e,#e94560); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">notre passion.</span>
-        </h1>
-        <p class="lead mb-5" style="color:rgba(255,255,255,0.7); max-width:560px; margin:0 auto 2.5rem;">
-            Découvrez des milliers de meubles soigneusement sélectionnés pour transformer chaque pièce de votre maison.
-        </p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-            <a href="{{ path('app_meuble_index') }}" class="btn btn-lg btn-primary-sym px-5 py-3">
-                <i class="bi bi-grid3x3-gap me-2"></i>Découvrir nos produits
-            </a>
-            <a href="{{ path('app_categorie_index') }}" class="btn btn-lg btn-outline-light px-5 py-3" style="border-radius:10px;">
-                Voir les catégories
-            </a>
-        </div>
+<section class="hero-section">
+    <div class="container hero-inner">
+        <div class="hero-copy text-white text-center">
+            <span class="eyebrow hero-eyebrow">Bienvenue sur SymHome</span>
+            <h1 class="hero-title">
+                Votre intérieur,<br>
+                <span>notre passion.</span>
+            </h1>
+            <p class="hero-text">
+                Découvrez des milliers de meubles soigneusement sélectionnés pour transformer chaque pièce de votre maison.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ path('app_meuble_index') }}" class="btn btn-primary-sym btn-lg">
+                    <i class="bi bi-grid3x3-gap me-2"></i>Découvrir nos produits
+                </a>
+                <a href="{{ path('app_categorie_index') }}" class="btn btn-outline-light btn-lg">
+                    Voir les catégories
+                </a>
+            </div>
 
-        <!-- Stats -->
-        <div class="row mt-5 pt-3 g-4" style="max-width:700px; margin:0 auto;">
-            <div class="col-4">
-                <div style="color:#c8a96e; font-size:2rem; font-weight:800;">500+</div>
-                <div style="color:rgba(255,255,255,0.6); font-size:0.85rem;">Meubles disponibles</div>
-            </div>
-            <div class="col-4">
-                <div style="color:#c8a96e; font-size:2rem; font-weight:800;">4</div>
-                <div style="color:rgba(255,255,255,0.6); font-size:0.85rem;">Catégories principales</div>
-            </div>
-            <div class="col-4">
-                <div style="color:#c8a96e; font-size:2rem; font-weight:800;">100%</div>
-                <div style="color:rgba(255,255,255,0.6); font-size:0.85rem;">Satisfaction garantie</div>
+            <div class="hero-stats row gx-4 gy-3 justify-content-center">
+                <div class="col-auto">
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-value">500+</div>
+                        <div class="hero-stat-label">Meubles disponibles</div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-value">6</div>
+                        <div class="hero-stat-label">Catégories premium</div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-value">100%</div>
+                        <div class="hero-stat-label">Satisfaction garantie</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,15 @@
+<div class="card p-4 rounded-4">
+    {{ form_start(form) }}
+        <div class="row gy-3">
+            <div class="col-md-6">{{ form_row(form.prenom) }}</div>
+            <div class="col-md-6">{{ form_row(form.nom) }}</div>
+            <div class="col-md-6">{{ form_row(form.email) }}</div>
+            <div class="col-12">{{ form_row(form.roles) }}</div>
+            <div class="col-12">{{ form_row(form.plainPassword) }}</div>
+        </div>
+        <div class="mt-4 d-flex gap-2 justify-content-end">
+            <a href="{{ path('admin_users') }}" class="btn btn-secondary">Annuler</a>
+            <button class="btn btn-primary-sym">{{ button_label|default('Enregistrer') }}</button>
+        </div>
+    {{ form_end(form) }}
+</div>

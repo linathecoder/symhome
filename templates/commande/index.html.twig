@@ -43,10 +43,16 @@
                         Voir
                     </a>
 
-                    <a href="{{ path('commande_delete', {'id': commande.id}) }}"
-                       class="btn btn-danger">
-                        Supprimer
-                    </a>
+                    <form method="post"
+                          action="{{ path('commande_delete', {'id': commande.id}) }}"
+                          style="display:inline-block; margin:0;">
+                        <input type="hidden" name="_token"
+                               value="{{ csrf_token('delete-commande' ~ commande.id) }}">
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Voulez-vous vraiment supprimer cette commande ?');">
+                            Supprimer
+                        </button>
+                    </form>
 
                 </td>
 
