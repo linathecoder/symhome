@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use App\Repository\CommandeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
@@ -16,41 +16,37 @@ class Commande
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $date = null;
+    private ?\DateTime $date = null;
 
     #[ORM\Column]
     private ?float $total = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(length: 50)]
+    private ?string $status = 'en_attente';
 
-    // 🔗 Many commandes → One user
     #[ORM\ManyToOne(inversedBy: 'commandes')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    // 🔗 One commande → Many lignes
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: LigneCommande::class, cascade: ['persist', 'remove'])]
     private Collection $ligneCommandes;
 
     public function __construct()
     {
         $this->ligneCommandes = new ArrayCollection();
+        $this->date = new \DateTime();
     }
-
-    // ================= GETTERS / SETTERS =================
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): ?\DateTime
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
         return $this;
@@ -78,8 +74,6 @@ class Commande
         return $this;
     }
 
-    // ================= USER =================
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -91,31 +85,27 @@ class Commande
         return $this;
     }
 
-    // ================= LIGNES COMMANDE =================
-
     public function getLigneCommandes(): Collection
     {
         return $this->ligneCommandes;
     }
 
-    public function addLigneCommande(LigneCommande $ligneCommande): static
+    public function addLigneCommande(LigneCommande $ligne): static
     {
-        if (!$this->ligneCommandes->contains($ligneCommande)) {
-            $this->ligneCommandes->add($ligneCommande);
-            $ligneCommande->setCommande($this);
+        if (!$this->ligneCommandes->contains($ligne)) {
+            $this->ligneCommandes->add($ligne);
+            $ligne->setCommande($this);
         }
-
         return $this;
     }
 
-    public function removeLigneCommande(LigneCommande $ligneCommande): static
+    public function removeLigneCommande(LigneCommande $ligne): static
     {
-        if ($this->ligneCommandes->removeElement($ligneCommande)) {
-            if ($ligneCommande->getCommande() === $this) {
-                $ligneCommande->setCommande(null);
+        if ($this->ligneCommandes->removeElement($ligne)) {
+            if ($ligne->getCommande() === $this) {
+                $ligne->setCommande(null);
             }
         }
-
         return $this;
     }
 }

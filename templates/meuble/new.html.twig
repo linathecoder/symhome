@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouveau meuble — Admin{% endblock %}
+
+{% block body %}
+<div class="container py-5" style="max-width:700px;">
+    <h1 class="fw-800 mb-4">
+        <i class="bi bi-plus-circle me-2" style="color:#c8a96e;"></i>Ajouter un meuble
+    </h1>
+
+    <div class="card border-0 shadow rounded-4 p-4">
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prix) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.stock) }}
+        {{ form_row(form.categorie) }}
+        {{ form_row(form.imageFile) }}
+
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" id="btn-save-meuble" class="btn btn-primary-sym px-5">
+                <i class="bi bi-save me-1"></i>Enregistrer
+            </button>
+            <a href="{{ path('app_meuble_index') }}" class="btn btn-outline-secondary">Annuler</a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

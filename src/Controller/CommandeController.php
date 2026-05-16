@@ -8,68 +8,65 @@ use App\Repository\CommandeRepository;
 use App\Repository\MeubleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-final class CommandeController extends AbstractController
+class CommandeController extends AbstractController
 {
+    // ── USER: My orders ─────────────────────────────
+    #[IsGranted('ROLE_USER')]
     #[Route('/commande', name: 'app_commande')]
     public function index(CommandeRepository $commandeRepository): Response
     {
         return $this->render('commande/index.html.twig', [
-            'commandes' => $commandeRepository->findAll(),
+            'commandes' => $commandeRepository->findBy(
+                ['user' => $this->getUser()],
+                ['id' => 'DESC']
+            ),
         ]);
     }
 
-    #[Route('/commande/show/{id}', name: 'commande_show')]
+    // ── USER: Order detail ──────────────────────────
+    #[IsGranted('ROLE_USER')]
+    #[Route('/commande/{id}', name: 'commande_show')]
     public function show(Commande $commande): Response
     {
+        if ($commande->getUser() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
         return $this->render('commande/show.html.twig', [
             'commande' => $commande,
         ]);
     }
 
-    #[Route('/commande/delete/{id}', name: 'commande_delete')]
-    public function delete(
-        Commande $commande,
-        EntityManagerInterface $entityManager
-    ): Response {
-
-        $entityManager->remove($commande);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_commande');
-    }
-
-    #[Route('/commande/checkout', name: 'commande_checkout')]
+    // ── CHECKOUT (UNIQUE VERSION) ───────────────────
+    #[IsGranted('ROLE_USER')]
+    #[Route('/checkout', name: 'app_checkout')]
     public function checkout(
         RequestStack $requestStack,
         MeubleRepository $meubleRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $em
     ): Response {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('app_login');
-        }
-
         $session = $requestStack->getSession();
         $cart = $session->get('cart', []);
 
-        if (empty($cart)) {
+        if (!$cart) {
             return $this->redirectToRoute('app_cart');
         }
 
         $commande = new Commande();
-        $commande->setDate(new \DateTimeImmutable());
-        $commande->setStatus('En attente');
         $commande->setUser($this->getUser());
+        $commande->setDate(new \DateTime());
+        $commande->setStatus('en_attente');
 
         $total = 0;
 
         foreach ($cart as $id => $qty) {
-
             $meuble = $meubleRepository->find($id);
-
             if (!$meuble) continue;
 
             $ligne = new LigneCommande();
@@ -78,15 +75,15 @@ final class CommandeController extends AbstractController
             $ligne->setQuantity($qty);
             $ligne->setPrice($meuble->getPrix());
 
-            $entityManager->persist($ligne);
+            $em->persist($ligne);
 
             $total += $meuble->getPrix() * $qty;
         }
 
         $commande->setTotal($total);
 
-        $entityManager->persist($commande);
-        $entityManager->flush();
+        $em->persist($commande);
+        $em->flush();
 
         $session->remove('cart');
 

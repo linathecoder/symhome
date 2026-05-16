@@ -1,35 +1,62 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Categorie index{% endblock %}
+{% block title %}Catégories — SymHome{% endblock %}
 
 {% block body %}
-    <h1>Categorie index</h1>
+<div class="container py-5">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="text-center mb-5">
+        <h1 class="section-title">Nos <span>Catégories</span></h1>
+        <div class="section-line mx-auto"></div>
+        <p class="text-muted">Parcourez notre sélection par univers</p>
+    </div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{{ path('app_categorie_new') }}" class="btn btn-primary-sym">
+            <i class="bi bi-plus-circle me-1"></i>Nouvelle catégorie
+        </a>
+    </div>
+    {% endif %}
+
+    {% set catColors = [
+        'linear-gradient(135deg,#667eea,#764ba2)',
+        'linear-gradient(135deg,#f093fb,#f5576c)',
+        'linear-gradient(135deg,#4facfe,#00f2fe)',
+        'linear-gradient(135deg,#43e97b,#38f9d7)'
+    ] %}
+    {% set catIcons = {'Sejour':'bi-sofa','Chambre':'bi-moon-stars','Bureau':'bi-briefcase','Cuisine':'bi-egg-fried'} %}
+
+    <div class="row g-4">
         {% for categorie in categories %}
-            <tr>
-                <td>{{ categorie.id }}</td>
-                <td>{{ categorie.nom }}</td>
-                <td>
-                    <a href="{{ path('app_categorie_show', {'id': categorie.id}) }}">show</a>
-                    <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ path('app_meuble_index', {'categorie': categorie.id}) }}" class="text-decoration-none">
+                <div class="rounded-4 p-5 text-white text-center"
+                     style="background:{{ catColors[loop.index0 % 4] }}; transition:transform 0.3s, box-shadow 0.3s;"
+                     onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    <i class="bi {{ catIcons[categorie.nom] ?? 'bi-house' }}" style="font-size:3rem;"></i>
+                    <h4 class="fw-700 mt-3 mb-1">{{ categorie.nom }}</h4>
+                    <p style="opacity:0.85; margin:0;">{{ categorie.meubles|length }} article(s)</p>
+                </div>
+            </a>
 
-    <a href="{{ path('app_categorie_new') }}">Create new</a>
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="d-flex gap-2 mt-2">
+                <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}"
+                   class="btn btn-sm btn-warning flex-grow-1">
+                    <i class="bi bi-pencil me-1"></i>Modifier
+                </a>
+                <form method="post" action="{{ path('app_categorie_delete', {'id': categorie.id}) }}"
+                      onsubmit="return confirm('Supprimer cette catégorie ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete'~categorie.id) }}">
+                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="col-12 text-center text-muted py-5">Aucune catégorie disponible.</div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
