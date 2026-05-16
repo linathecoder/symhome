@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+{% block title %}Dashboard Admin — SymHome{% endblock %}
+
+{% block body %}
+<div class="d-flex">
+
+    <!-- ── SIDEBAR ─────────────────────────────────────────────────── -->
+    <aside class="admin-sidebar" style="width:240px; min-width:240px;">
+        <div class="px-4 py-3 mb-2">
+            <span style="color:#c8a96e; font-weight:800; font-size:1.1rem;">🏠 Admin Panel</span>
+        </div>
+        <a href="{{ path('admin_dashboard') }}" class="admin-nav-link active">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="{{ path('admin_commandes') }}" class="admin-nav-link">
+            <i class="bi bi-bag-check"></i> Commandes
+        </a>
+        <a href="{{ path('admin_catalogue') }}" class="admin-nav-link">
+            <i class="bi bi-grid3x3-gap"></i> Catalogue
+        </a>
+        <a href="{{ path('admin_users') }}" class="admin-nav-link">
+            <i class="bi bi-people"></i> Utilisateurs
+        </a>
+        <a href="{{ path('app_categorie_index') }}" class="admin-nav-link">
+            <i class="bi bi-tags"></i> Catégories
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem;">
+        <a href="{{ path('app_home') }}" class="admin-nav-link">
+            <i class="bi bi-house"></i> Voir la boutique
+        </a>
+    </aside>
+
+    <!-- ── MAIN CONTENT ───────────────────────────────────────────── -->
+    <main style="flex:1; padding:2rem; background:#f8f5f0;">
+
+        <h1 class="fw-800 mb-1" style="color:#1a1a2e;">Tableau de bord</h1>
+        <p class="text-muted mb-4">Vue d'ensemble de votre activité</p>
+
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="rounded-4 p-4 text-white h-100"
+                     style="background:linear-gradient(135deg,#c8a96e,#a8834a);">
+                    <div style="font-size:2rem; font-weight:800;">{{ chiffreAffaires|number_format(0,',',' ') }}</div>
+                    <div style="font-size:0.8rem; opacity:0.85;">DT Chiffre d'affaires</div>
+                    <i class="bi bi-graph-up-arrow mt-2" style="font-size:1.5rem; opacity:0.6;"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="rounded-4 p-4 text-white h-100"
+                     style="background:linear-gradient(135deg,#667eea,#764ba2);">
+                    <div style="font-size:2rem; font-weight:800;">{{ totalClients }}</div>
+                    <div style="font-size:0.8rem; opacity:0.85;">Clients inscrits</div>
+                    <i class="bi bi-people mt-2" style="font-size:1.5rem; opacity:0.6;"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="rounded-4 p-4 text-white h-100"
+                     style="background:linear-gradient(135deg,#4facfe,#00f2fe);">
+                    <div style="font-size:2rem; font-weight:800;">{{ totalCommandes }}</div>
+                    <div style="font-size:0.8rem; opacity:0.85;">Commandes totales</div>
+                    <i class="bi bi-bag-check mt-2" style="font-size:1.5rem; opacity:0.6;"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="rounded-4 p-4 h-100"
+                     style="background:linear-gradient(135deg,#43e97b,#38f9d7); color:#1a1a2e;">
+                    <div style="font-size:1rem; font-weight:800;">
+                        {{ bestMeuble ? bestMeuble.nom : 'N/A' }}
+                    </div>
+                    <div style="font-size:0.8rem; opacity:0.75;">⭐ Meuble le + vendu</div>
+                    <i class="bi bi-trophy mt-2" style="font-size:1.5rem; opacity:0.5;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="row g-4 mb-4">
+            <!-- Revenue Chart -->
+            <div class="col-md-8">
+                <div class="bg-white rounded-4 p-4 shadow-sm h-100">
+                    <h5 class="fw-700 mb-3">Chiffre d'affaires (6 derniers mois)</h5>
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+
+            <!-- Status Pie Chart -->
+            <div class="col-md-4">
+                <div class="bg-white rounded-4 p-4 shadow-sm h-100">
+                    <h5 class="fw-700 mb-3">Statuts des commandes</h5>
+                    <canvas id="statusChart"></canvas>
+                    <div class="mt-3">
+                        {% for status, count in statusCounts %}
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="badge badge-{{ status }}">{{ status|replace({'_':' '})|capitalize }}</span>
+                            <strong>{{ count }}</strong>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{{ path('app_meuble_new') }}" class="btn btn-primary-sym w-100 py-3">
+                    <i class="bi bi-plus-circle me-2"></i>Ajouter un meuble
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ path('admin_commandes') }}" class="btn btn-outline-sym w-100 py-3">
+                    <i class="bi bi-list-check me-2"></i>Gérer les commandes
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ path('app_categorie_new') }}" class="btn btn-outline-secondary w-100 py-3">
+                    <i class="bi bi-tag me-2"></i>Nouvelle catégorie
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue line chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: {{ monthlyRevenue|keys|json_encode|raw }},
+        datasets: [{
+            label: 'Revenus (DT)',
+            data: {{ monthlyRevenue|map(v => v)|json_encode|raw }},
+            borderColor: '#c8a96e',
+            backgroundColor: 'rgba(200,169,110,0.12)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#c8a96e',
+            pointRadius: 5,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Status doughnut chart
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['En attente', 'En cours', 'Complétée', 'Annulée'],
+        datasets: [{
+            data: [
+                {{ statusCounts.en_attente }},
+                {{ statusCounts.en_cours }},
+                {{ statusCounts.completee }},
+                {{ statusCounts.annulee }}
+            ],
+            backgroundColor: ['#ffc107','#0dcaf0','#198754','#dc3545'],
+            borderWidth: 0,
+        }]
+    },
+    options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+{% endblock %}

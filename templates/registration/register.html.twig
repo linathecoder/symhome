@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription — SymHome{% endblock %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5"
+     style="background: linear-gradient(135deg,#1a1a2e,#16213e);">
+    <div class="auth-card" style="max-width:520px;">
+
+        <div class="text-center mb-4">
+            <div style="font-size:3rem;">✨</div>
+            <h1 class="fw-800" style="font-size:1.8rem; color:#1a1a2e;">Créer un compte</h1>
+            <p class="text-muted small">Rejoignez la communauté SymHome</p>
+        </div>
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <div class="row g-3 mb-3">
+            <div class="col-6">
+                <label class="form-label fw-600">{{ form_label(form.prenom) }}</label>
+                {{ form_widget(form.prenom) }}
+                {{ form_errors(form.prenom) }}
+            </div>
+            <div class="col-6">
+                <label class="form-label fw-600">{{ form_label(form.nom) }}</label>
+                {{ form_widget(form.nom) }}
+                {{ form_errors(form.nom) }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-600">Email</label>
+            {{ form_widget(form.email) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-600">Mot de passe</label>
+            {{ form_widget(form.plainPassword.first) }}
+            {{ form_errors(form.plainPassword.first) }}
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-600">Confirmer le mot de passe</label>
+            {{ form_widget(form.plainPassword.second) }}
+            {{ form_errors(form.plainPassword.second) }}
+        </div>
+
+        <button type="submit" id="btn-register" class="btn btn-primary-sym w-100 py-3 fw-700" style="font-size:1rem;">
+            <i class="bi bi-person-plus me-2"></i>Créer mon compte
+        </button>
+
+        {{ form_end(form) }}
+
+        <hr class="my-4">
+        <p class="text-center text-muted small mb-0">
+            Déjà un compte ?
+            <a href="{{ path('app_login') }}" style="color:#c8a96e; font-weight:600;">Se connecter</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

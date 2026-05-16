@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+{% block title %}Catalogue — Admin SymHome{% endblock %}
+
+{% block body %}
+<div class="d-flex">
+    <aside class="admin-sidebar" style="width:240px; min-width:240px;">
+        <div class="px-4 py-3 mb-2">
+            <span style="color:#c8a96e; font-weight:800; font-size:1.1rem;">🏠 Admin Panel</span>
+        </div>
+        <a href="{{ path('admin_dashboard') }}" class="admin-nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ path('admin_commandes') }}" class="admin-nav-link"><i class="bi bi-bag-check"></i> Commandes</a>
+        <a href="{{ path('admin_catalogue') }}" class="admin-nav-link active"><i class="bi bi-grid3x3-gap"></i> Catalogue</a>
+        <a href="{{ path('admin_users') }}" class="admin-nav-link"><i class="bi bi-people"></i> Utilisateurs</a>
+        <a href="{{ path('app_categorie_index') }}" class="admin-nav-link"><i class="bi bi-tags"></i> Catégories</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem;">
+        <a href="{{ path('app_home') }}" class="admin-nav-link"><i class="bi bi-house"></i> Voir la boutique</a>
+    </aside>
+
+    <main style="flex:1; padding:2rem; background:#f8f5f0;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="fw-800 mb-0" style="color:#1a1a2e;">Catalogue des meubles</h1>
+            <a href="{{ path('app_meuble_new') }}" class="btn btn-primary-sym">
+                <i class="bi bi-plus-circle me-1"></i>Ajouter un meuble
+            </a>
+        </div>
+
+        <div class="bg-white rounded-4 shadow-sm p-3">
+            <table class="table table-symhome mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Image</th>
+                        <th>Nom</th>
+                        <th>Catégorie</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for meuble in meubles %}
+                    <tr>
+                        <td>{{ meuble.id }}</td>
+                        <td>
+                            <img src="/uploads/{{ meuble.image }}" alt="{{ meuble.nom }}"
+                                 style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
+                        </td>
+                        <td><strong>{{ meuble.nom }}</strong></td>
+                        <td>{{ meuble.categorie ? meuble.categorie.nom : '—' }}</td>
+                        <td style="color:#c8a96e; font-weight:700;">{{ meuble.prix|number_format(2,',',' ') }} DT</td>
+                        <td>
+                            {% if meuble.stock == 0 %}
+                                <span class="badge bg-danger">Épuisé</span>
+                            {% elseif meuble.stock <= 3 %}
+                                <span class="badge bg-warning text-dark">{{ meuble.stock }}</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ meuble.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="d-flex gap-1">
+                            <a href="{{ path('app_meuble_edit', {'id': meuble.id}) }}"
+                               class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="post" action="{{ path('app_meuble_delete', {'id': meuble.id}) }}"
+                                  onsubmit="return confirm('Supprimer ce meuble ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ meuble.id) }}">
+                                <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="7" class="text-center text-muted py-4">Aucun meuble dans le catalogue.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

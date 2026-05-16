@@ -1,4 +1,8 @@
 <?php
+// ============================================================
+// src/Entity/Meuble.php
+// Table name fixed: meubles (not meuble)
+// ============================================================
 
 namespace App\Entity;
 
@@ -6,6 +10,7 @@ use App\Repository\MeubleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MeubleRepository::class)]
+#[ORM\Table(name: 'meubles')]
 class Meuble
 {
     #[ORM\Id]
@@ -26,9 +31,10 @@ class Meuble
     private ?int $stock = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $image = null;
+    private ?string $image = 'default.jpg';
 
     #[ORM\ManyToOne(inversedBy: 'meubles')]
+    #[ORM\JoinColumn(name: 'categorie_id', referencedColumnName: 'id', nullable: true)]
     private ?Categorie $categorie = null;
 
     public function getId(): ?int { return $this->id; }

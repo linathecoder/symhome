@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+{% block title %}Utilisateurs — Admin SymHome{% endblock %}
+
+{% block body %}
+<div class="d-flex">
+    <aside class="admin-sidebar" style="width:240px; min-width:240px;">
+        <div class="px-4 py-3 mb-2">
+            <span style="color:#c8a96e; font-weight:800; font-size:1.1rem;">🏠 Admin Panel</span>
+        </div>
+        <a href="{{ path('admin_dashboard') }}" class="admin-nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ path('admin_commandes') }}" class="admin-nav-link"><i class="bi bi-bag-check"></i> Commandes</a>
+        <a href="{{ path('admin_catalogue') }}" class="admin-nav-link"><i class="bi bi-grid3x3-gap"></i> Catalogue</a>
+        <a href="{{ path('admin_users') }}" class="admin-nav-link active"><i class="bi bi-people"></i> Utilisateurs</a>
+        <a href="{{ path('app_categorie_index') }}" class="admin-nav-link"><i class="bi bi-tags"></i> Catégories</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem;">
+        <a href="{{ path('app_home') }}" class="admin-nav-link"><i class="bi bi-house"></i> Voir la boutique</a>
+    </aside>
+
+    <main style="flex:1; padding:2rem; background:#f8f5f0;">
+        <h1 class="fw-800 mb-4" style="color:#1a1a2e;">Gestion des utilisateurs</h1>
+
+        <div class="bg-white rounded-4 shadow-sm p-3">
+            <table class="table table-symhome mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Vérifié</th>
+                        <th>Commandes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.prenom }} {{ user.nom }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge bg-danger">Admin</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Client</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.isVerified %}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill text-danger"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.commandes|length }}</td>
+                        <td class="d-flex gap-1">
+                            <form method="post" action="{{ path('admin_user_toggle', {'id': user.id}) }}">
+                                <button class="btn btn-sm btn-warning">
+                                    <i class="bi bi-shield-{{ 'ROLE_ADMIN' in user.roles ? 'minus' : 'plus' }}"></i>
+                                    {{ 'ROLE_ADMIN' in user.roles ? 'Rétrograder' : 'Promouvoir' }}
+                                </button>
+                            </form>
+                            <form method="post" action="{{ path('admin_user_delete', {'id': user.id}) }}"
+                                  onsubmit="return confirm('Supprimer cet utilisateur ?')">
+                                <button class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="7" class="text-center text-muted py-4">Aucun utilisateur.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

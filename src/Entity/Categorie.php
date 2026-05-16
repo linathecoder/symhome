@@ -1,4 +1,5 @@
 <?php
+// src/Entity/Categorie.php
 
 namespace App\Entity;
 
@@ -8,6 +9,7 @@ use App\Repository\CategorieRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
+#[ORM\Table(name: 'categories')]
 class Categorie
 {
     #[ORM\Id]
@@ -18,7 +20,6 @@ class Categorie
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    // ✅ relation MUST be declared BEFORE constructor
     #[ORM\OneToMany(mappedBy: 'categorie', targetEntity: Meuble::class)]
     private Collection $meubles;
 
@@ -27,25 +28,10 @@ class Categorie
         $this->meubles = new ArrayCollection();
     }
 
-    // getters & setters
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
+    public function getNom(): ?string { return $this->nom; }
+    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
 
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-        return $this;
-    }
-
-    public function getMeubles(): Collection
-    {
-        return $this->meubles;
-    }
+    public function getMeubles(): Collection { return $this->meubles; }
 }
