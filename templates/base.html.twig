@@ -25,17 +25,17 @@
         <a href="{{ path('app_meuble_index') }}">Produits</a>
         <a href="{{ path('app_cart') }}">Panier</a>
         <a href="{{ path('app_categorie_index') }}">Catégories</a>
-        {% if app.user %}
+        {% if app.session.get('user_id') %}
             <a href="{{ path('app_commande') }}">Mes commandes</a>
         {% endif %}
-        {% if app.user and is_granted('ROLE_ADMIN') %}
+        {% if 'ROLE_ADMIN' in app.session.get('user_roles', []) %}
             <a href="{{ path('admin_dashboard') }}">Admin</a>
         {% endif %}
     </nav>
 
     <div class="site-meta">
-        {% if app.user %}
-            <span class="user-chip">{{ app.user.prenom ?: app.user.email }}</span>
+        {% if app.session.get('user_id') %}
+            <span class="user-chip">{{ app.session.get('user_name') }}</span>
             <a href="{{ path('app_logout') }}" class="btn btn-secondary">Déconnexion</a>
         {% else %}
             <a href="{{ path('app_login') }}" class="btn btn-secondary">Connexion</a>

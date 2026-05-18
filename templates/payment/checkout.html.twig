@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement - SymHome{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="section-title">Paiement <span>simple</span></h1>
+        <div class="section-line mx-auto"></div>
+        <p class="text-muted">Choisissez un mode de paiement pour confirmer votre commande.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="payment-panel">
+                <h5 class="mb-4">Mode de paiement</h5>
+
+                <form method="post" action="{{ path('app_checkout') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('payment-checkout') }}">
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="card" checked>
+                        <span>
+                            <strong><i class="bi bi-credit-card me-2"></i>Carte bancaire</strong>
+                            <small>Paiement simule pour le projet. Aucune carte reelle n'est demandee.</small>
+                        </span>
+                    </label>
+
+                    <div class="payment-card-preview">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Nom sur la carte</label>
+                                <input type="text" class="form-control" placeholder="Client SymHome">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Expiration</label>
+                                <input type="text" class="form-control" placeholder="12/28">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Numero de carte</label>
+                                <input type="text" class="form-control" placeholder="4242 4242 4242 4242">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">CVC</label>
+                                <input type="text" class="form-control" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="payment-option mt-3">
+                        <input type="radio" name="payment_method" value="cash">
+                        <span>
+                            <strong><i class="bi bi-cash-coin me-2"></i>Paiement a la livraison</strong>
+                            <small>La commande reste en attente jusqu'a confirmation par l'admin.</small>
+                        </span>
+                    </label>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary-sym">
+                            <i class="bi bi-check2-circle me-2"></i>Confirmer le paiement
+                        </button>
+                        <a href="{{ path('app_cart') }}" class="btn btn-outline-sym">Retour au panier</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="payment-summary">
+                <h5 class="mb-3">Resume commande</h5>
+
+                {% for item in items %}
+                    <div class="payment-summary-line">
+                        <div>
+                            <strong>{{ item.meuble.nom }}</strong>
+                            <small>Quantite : {{ item.quantity }}</small>
+                        </div>
+                        <span>{{ item.sousTotal|number_format(2, ',', ' ') }} DT</span>
+                    </div>
+                {% endfor %}
+
+                <div class="payment-total">
+                    <span>Total</span>
+                    <strong>{{ total|number_format(2, ',', ' ') }} DT</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

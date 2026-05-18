@@ -9,14 +9,30 @@ use App\Repository\MeubleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/meuble')]
 class MeubleController extends AbstractController
 {
+    public function __construct(private RequestStack $requestStack)
+    {
+    }
+
+    private function denyUnlessAdmin(): ?Response
+    {
+        $roles = $this->requestStack->getSession()->get('user_roles', []);
+
+        if (!in_array('ROLE_ADMIN', $roles, true)) {
+            $this->addFlash('danger', 'Acces reserve a l administrateur.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        return null;
+    }
+
     // ================= LIST + SEARCH + FILTER =================
     #[Route('/', name: 'app_meuble_index')]
     public function index(
@@ -65,13 +81,16 @@ class MeubleController extends AbstractController
     }
 
     // ================= CREATE (ADMIN) =================
-    #[IsGranted('ROLE_ADMIN')]
     #[Route('/new', name: 'app_meuble_new')]
     public function new(
         Request $request,
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): Response {
+        if ($response = $this->denyUnlessAdmin()) {
+            return $response;
+        }
+
         $meuble = new Meuble();
         $form = $this->createForm(MeubleType::class, $meuble);
         $form->handleRequest($request);
@@ -91,7 +110,7 @@ class MeubleController extends AbstractController
             $em->persist($meuble);
             $em->flush();
             $this->addFlash('success', 'Meuble ajouté avec succès !');
-            return $this->redirectToRoute('app_meuble_index');
+            return $this->redirectToRoute('admin_catalogue');
         }
 
         return $this->render('meuble/new.html.twig', [
@@ -100,7 +119,6 @@ class MeubleController extends AbstractController
     }
 
     // ================= EDIT (ADMIN) =================
-    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_meuble_edit', requirements: ['id' => '\d+'])]
     public function edit(
         Meuble $meuble,
@@ -108,6 +126,10 @@ class MeubleController extends AbstractController
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): Response {
+        if ($response = $this->denyUnlessAdmin()) {
+            return $response;
+        }
+
         $form = $this->createForm(MeubleType::class, $meuble);
         $form->handleRequest($request);
 
@@ -123,7 +145,7 @@ class MeubleController extends AbstractController
 
             $em->flush();
             $this->addFlash('success', 'Meuble modifié avec succès !');
-            return $this->redirectToRoute('app_meuble_index');
+            return $this->redirectToRoute('admin_catalogue');
         }
 
         return $this->render('meuble/edit.html.twig', [
@@ -133,15 +155,18 @@ class MeubleController extends AbstractController
     }
 
     // ================= DELETE (ADMIN) =================
-    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/delete', name: 'app_meuble_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Meuble $meuble, EntityManagerInterface $em): Response
     {
+        if ($response = $this->denyUnlessAdmin()) {
+            return $response;
+        }
+
         if ($this->isCsrfTokenValid('delete' . $meuble->getId(), $request->request->get('_token'))) {
             $em->remove($meuble);
             $em->flush();
             $this->addFlash('success', 'Meuble supprimé.');
         }
-        return $this->redirectToRoute('app_meuble_index');
+        return $this->redirectToRoute('admin_catalogue');
     }
 }

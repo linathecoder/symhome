@@ -10,7 +10,7 @@
         <p class="text-muted">Parcourez notre sélection par univers</p>
     </div>
 
-    {% if is_granted('ROLE_ADMIN') %}
+    {% if 'ROLE_ADMIN' in app.session.get('user_roles', []) %}
     <div class="d-flex justify-content-end mb-3">
         <a href="{{ path('app_categorie_new') }}" class="btn btn-primary-sym">
             <i class="bi bi-plus-circle me-1"></i>Nouvelle catégorie
@@ -40,7 +40,7 @@
                 </div>
             </a>
 
-            {% if is_granted('ROLE_ADMIN') %}
+            {% if 'ROLE_ADMIN' in app.session.get('user_roles', []) %}
             <div class="d-flex gap-2 mt-2">
                 <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}"
                    class="btn btn-sm btn-warning flex-grow-1">

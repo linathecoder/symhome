@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Commande;
 use App\Entity\LigneCommande;
 use App\Repository\MeubleRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,12 +59,24 @@ class CartController extends AbstractController
     #[Route('/cart/add/{id}', name: 'cart_add')]
     public function add(
         int $id,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        MeubleRepository $meubleRepository
     ): Response {
 
         $session = $requestStack->getSession();
 
         $cart = $session->get('cart', []);
+
+        $meuble = $meubleRepository->find($id);
+        if (!$meuble || $meuble->getStock() <= 0) {
+            $this->addFlash('danger', 'Produit indisponible.');
+            return $this->redirectToRoute('app_meuble_index');
+        }
+
+        if (($cart[$id] ?? 0) + 1 > $meuble->getStock()) {
+            $this->addFlash('danger', 'Quantite demandee superieure au stock disponible.');
+            return $this->redirectToRoute('app_cart');
+        }
 
         $cart[$id] = ($cart[$id] ?? 0) + 1;
 
@@ -80,7 +93,8 @@ class CartController extends AbstractController
     public function update(
         int $id,
         Request $request,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        MeubleRepository $meubleRepository
     ): Response {
 
         $session = $requestStack->getSession();
@@ -88,10 +102,14 @@ class CartController extends AbstractController
         $cart = $session->get('cart', []);
 
         $quantity = (int) $request->request->get('quantity', 1);
+        $meuble = $meubleRepository->find($id);
 
         if ($quantity <= 0) {
 
             unset($cart[$id]);
+        } elseif (!$meuble || $quantity > $meuble->getStock()) {
+            $this->addFlash('danger', 'Quantite demandee superieure au stock disponible.');
+            return $this->redirectToRoute('app_cart');
         } else {
 
             $cart[$id] = $quantity;
@@ -141,10 +159,14 @@ class CartController extends AbstractController
     public function checkout(
         RequestStack $requestStack,
         MeubleRepository $meubleRepository,
+        UserRepository $userRepository,
         EntityManagerInterface $em
     ): Response {
 
-        if (!$this->getUser()) {
+        $userId = $requestStack->getSession()->get('user_id');
+        $user = $userId ? $userRepository->find($userId) : null;
+
+        if (!$user) {
 
             return $this->redirectToRoute('app_login');
         }
@@ -166,7 +188,7 @@ class CartController extends AbstractController
 
         $commande->setStatus('payée');
 
-        $commande->setUser($this->getUser());
+        $commande->setUser($user);
 
         $total = 0;
 
@@ -176,6 +198,16 @@ class CartController extends AbstractController
 
             if (!$meuble) {
                 continue;
+            }
+
+            if ($quantity > $meuble->getStock()) {
+                $this->addFlash('danger', sprintf(
+                    'Stock insuffisant pour %s. Stock disponible : %d.',
+                    $meuble->getNom(),
+                    $meuble->getStock()
+                ));
+
+                return $this->redirectToRoute('app_cart');
             }
 
             $ligne = new LigneCommande();
@@ -191,6 +223,8 @@ class CartController extends AbstractController
             $em->persist($ligne);
 
             $total += $meuble->getPrix() * $quantity;
+
+            $meuble->setStock($meuble->getStock() - $quantity);
         }
 
         $commande->setTotal($total);

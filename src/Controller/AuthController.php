@@ -2,22 +2,45 @@
 
 namespace App\Controller;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthController extends AbstractController
 {
-    #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    #[Route('/login', name: 'app_login', methods: ['GET', 'POST'])]
+    public function login(Request $request, UserRepository $userRepository): Response
     {
-        if ($this->getUser()) {
+        if ($request->getSession()->get('user_id')) {
             return $this->redirectToRoute('app_meuble_index');
         }
 
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $error = null;
+        $lastUsername = '';
+
+        if ($request->isMethod('POST')) {
+            $lastUsername = (string) $request->request->get('_username', '');
+            $password = (string) $request->request->get('_password', '');
+            $user = $userRepository->findOneBy(['email' => $lastUsername]);
+
+            if ($user && password_verify($password, $user->getPassword())) {
+                $session = $request->getSession();
+                $session->set('user_id', $user->getId());
+                $session->set('user_email', $user->getEmail());
+                $session->set('user_name', $user->getPrenom() ?: $user->getEmail());
+                $session->set('user_roles', $user->getRoles());
+
+                if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                    return $this->redirectToRoute('admin_dashboard');
+                }
+
+                return $this->redirectToRoute('app_meuble_index');
+            }
+
+            $error = 'Email ou mot de passe incorrect.';
+        }
 
         return $this->render('auth/login.html.twig', [
             'last_username' => $lastUsername,
@@ -26,8 +49,10 @@ class AuthController extends AbstractController
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(): Response
+    public function logout(Request $request): Response
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        $request->getSession()->clear();
+
+        return $this->redirectToRoute('app_meuble_index');
     }
 }

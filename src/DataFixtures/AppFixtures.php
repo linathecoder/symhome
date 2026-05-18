@@ -7,23 +7,20 @@ use App\Entity\Meuble;
 use App\Entity\Categorie;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    public function __construct(private UserPasswordHasherInterface $passwordHasher) {}
-
     public function load(ObjectManager $manager): void
     {
         $user = new User();
         $user->setEmail('test@example.com');
-        $user->setPassword($this->passwordHasher->hashPassword($user, 'password123'));
+        $user->setPassword(password_hash('password123', PASSWORD_DEFAULT));
         $user->setRoles([]);
         $manager->persist($user);
 
         $admin = new User();
         $admin->setEmail('admin@example.com');
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
+        $admin->setPassword(password_hash('admin123', PASSWORD_DEFAULT));
         $admin->setRoles(['ROLE_ADMIN']);
         $manager->persist($admin);
 

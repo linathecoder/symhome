@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
@@ -16,7 +15,6 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request,
-        UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $em
     ): Response {
 
@@ -28,9 +26,7 @@ class RegistrationController extends AbstractController
 
             $plainPassword = $form->get('plainPassword')->getData();
 
-            $user->setPassword(
-                $passwordHasher->hashPassword($user, $plainPassword)
-            );
+            $user->setPassword(password_hash($plainPassword, PASSWORD_DEFAULT));
 
             $user->setRoles(['ROLE_USER']);
             $user->setIsVerified(true);

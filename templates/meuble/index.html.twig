@@ -40,7 +40,7 @@
         </div>
     </form>
 
-    {% if is_granted('ROLE_ADMIN') %}
+    {% if 'ROLE_ADMIN' in app.session.get('user_roles', []) %}
     <div class="text-end mb-3">
         <a href="{{ path('app_meuble_new') }}" class="btn btn-primary-sym">
             Ajouter un meuble
@@ -85,7 +85,7 @@
                         </a>
                     </div>
 
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% if 'ROLE_ADMIN' in app.session.get('user_roles', []) %}
                     <div class="mt-2 d-flex gap-2">
                         <a href="{{ path('app_meuble_edit', {'id': meuble.id}) }}"
                            class="btn btn-warning btn-sm w-50">
